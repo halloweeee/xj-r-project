@@ -5,11 +5,9 @@ format: html
 editor: visual
 ---
 
-In this exercise, I will use data set called "cushny" in package "psychTools". It is a small data set, so the results might have bias.
+In this exercise, I will use data set called "cushny" in package "psychTools". It is a small data set, so the results might have bias. I want to use this data set to explore the effect of different medications on sleep hours compared to control group.
 
 ## Data import
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r, warning=FALSE}
 #install.packages("psychTools")
@@ -51,18 +49,23 @@ summary(df$Control)
 ## Plots
 
 ```{r}
-# In base R
+# Histogram in base R
 hist(df$Control, breaks =3,freq = FALSE,
     main = "Distribution of control group")
-# We can add mean (red) and median (blue): abline draws a straight line from a to b 
+# We can add mean (red) and median (blue): abline draws a straight line from a to b
 # (or vertical as here)
 abline(v = mean_ct, col = "red") 
 abline(v = median_ct, col = "blue")
+
 
 #box plot
 myseq <- as.character(c("control","drug1","drug2L", "drug2R","delta1", "delta2L","delta2R"))
 boxplot(list(df$Control,df$drug1,df$drug2L,df$drug2R,df$delta1,df$delta2L,df$delta2R), ylab = "Hours of sleep",
         xlab = "group", names=myseq)
+
+#another box plot
+psych::error.bars(df[1:4],within=TRUE,ylab="Hours of sleep",xlab="Drug condition",
+       main="95% confidence of within subject effects")
 ```
 
 ## T-distribution (exact CI)
@@ -119,19 +122,25 @@ cbind(diff_mean_d1c, lowerCI_diff_mean_d1c, upperCI_diff_mean_d1c)
 
 ```
 
-## A paired t-test and a two group t-test
+## A two group t-test
 
 ```{r}
 #H0:the difference in the control group and drug1 group is zero
 t.test(df$Control, df$drug1, data = df, var.equal = FALSE)
 t.test(df$Control, df$drug1, data = df, var.equal = TRUE)
 #p=0.4007>0.05, acceptH0, which shows there is no significant difference between the control group and drug1 group.
+
+#H0:the difference in the control group and drug2L group is zero
 t.test(df$Control,df$drug2L, data = df, var.equal = FALSE)
 t.test(df$Control,df$drug2L, data = df, var.equal = TRUE)
 #p=0.0072647<0.05, rejuectH0, which shows there is significant difference between the control group and drug2L group.
+
+#H0:the difference in the control group and drug2R group is zero
 t.test(df$Control,df$drug2R, data = df, var.equal = FALSE)
 t.test(df$Control,df$drug2R, data = df, var.equal = TRUE)
-#p=0.01155<0.05, rejuectH0, which shows there is significant difference between the control group and drug2L group.
+#p=0.01155<0.05, rejuectH0, which shows there is significant difference between the control group and drug2R group.
+
+#According to the t-tests above, drug2L and drug2R(.6 mg of Left and Right isomers of Hyoscine) have significant effect on hours of sleep. However, it is noted that a small dataset may not be sufficient to represent the problems and could encounter some issues like outliers, missing values(no outliers or missing values in this dataset), overfitting, sampleling bias etc. But this dataset is a good sample to practice t-test.
 
 ```
 
